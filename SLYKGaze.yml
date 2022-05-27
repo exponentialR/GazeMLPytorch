@@ -1,4 +1,4 @@
-name: ge-linux
+name: SLYKGaze-linux
 channels:
   - pytorch
   - conda-forge
