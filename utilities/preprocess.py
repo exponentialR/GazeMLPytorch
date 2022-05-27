@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from gaze import pitchyaw_to_vector, vector_to_pitchyaw
+from utilities.gaze import pitchyaw_to_vector, vector_to_pitchyaw
 from scipy.spatial.transform import Rotation as R
 
 
@@ -19,7 +19,7 @@ def preprocess_eye_image(image, json_data):
 
     def process_coords(coords_list):
         coords = [eval(l) for l in coords_list]
-        return np.array([x, input_height - y, z] for (x, y, z) in coords)
+        return np.array([[x, input_height - y, z] for (x, y, z) in coords])
 
     interior_landmarks = process_coords(json_data['interior_margin_2d'])
     caruncle_landmarks = process_coords(json_data['caruncle_2d'])
@@ -60,8 +60,8 @@ def preprocess_eye_image(image, json_data):
     eye = cv2.warpAffine(image, transform[:2], (output_width, output_height))
 
     rand_blur = np.random.uniform(low=0, high=20)
-    eye = cv2.GaussianBlur(eye, {5, 5}, rand_blur)
-
+    eye = cv2.GaussianBlur(eye, (5, 5), int(rand_blur))
+    # eye = cv2.GaussianBlur(eye, 5, rand_blur)
     # Normalize eye image
     eye = cv2.equalizeHist(eye)
     eye = eye.astype(np.float32)
@@ -91,7 +91,7 @@ def preprocess_eye_image(image, json_data):
     temp[:, 1] = landmarks[:, 0]
     landmarks = temp
 
-    heatmaps = get_heatmaps(w=heatmap_weight, h=heatmap_height, landmarks=landmarks)
+    heatmaps = get_heatmaps(width=heatmap_weight, height=heatmap_height, landmarks=landmarks)
     assert heatmaps.shape == (34, heatmap_height, heatmap_weight)
 
     return {

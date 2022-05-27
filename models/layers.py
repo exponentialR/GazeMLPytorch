@@ -1,5 +1,7 @@
 from torch import nn
+
 Pool = nn.MaxPool2d
+
 
 def batchnorm(x):
     return nn.BatchNorm2d(x.size()[1])(x)
@@ -62,19 +64,19 @@ class Residual(nn.Module):
 
 
 class Hourglass(nn.Module):
-    def __int__(self, n, f, bn = None, increase = 0):
+    def __int__(self, n, f, bn=None, increase=0):
         super(Hourglass, self).__init__()
         nf = f + increase
         self.up1 = Residual(f, f)
 
-        #lower branch
+        # lower branch
         self.pool1 = Pool(2, 2)
         self.low1 = Residual(f, nf)
         self.n = n
 
-        #Recursive hourglass
+        # Recursive hourglass
         if self.n > 1:
-            self.low2 = Hourglass(n-1, nf, bn=bn)
+            self.low2 = Hourglass(n - 1, nf, bn=bn)
         else:
             self.low2 = Residual(nf, nf)
         self.low3 = Residual(nf, f)
@@ -85,5 +87,5 @@ class Hourglass(nn.Module):
         low1 = self.low1(pool1)
         low2 = self.low2(low1)
         low3 = self.low3(low2)
-        up2 = nn.functional.interpolate(low3, x.shape[2:], mode = 'bilinear')
+        up2 = nn.functional.interpolate(low3, x.shape[2:], mode='bilinear')
         return up1 + up2
