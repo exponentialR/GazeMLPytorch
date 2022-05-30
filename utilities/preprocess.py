@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from gaze import pitchyaw_to_vector, vector_to_pitchyaw
+from utilities.gaze import pitchyaw_to_vector, vector_to_pitchyaw
 from scipy.spatial.transform import Rotation as R
 
 
